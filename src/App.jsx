@@ -11,23 +11,23 @@ export default function App() {
   const [output, setOutput] = useState(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+useEffect(() => {
+  const load = async () => {
+    ffmpeg.on("progress", ({ progress }) => {
+      setProgress(Math.round(progress * 100));
+    });
 
-  useEffect(() => {
-    const load = async () => {
-      ffmpeg.on("progress", ({ progress }) => {
-        setProgress(Math.round(progress * 100));
-      });
+    await ffmpeg.load({
+      coreURL: "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js",
+      wasmURL: "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm",
+    });
 
-      await ffmpeg.load({
-        coreURL: `${import.meta.env.BASE_URL}ffmpeg-core.js`,
-        wasmURL: `${import.meta.env.BASE_URL}ffmpeg-core.wasm`,
-      });
+    setReady(true);
+  };
 
-      setReady(true);
-    };
+  load();
+}, []);
 
-    load();
-  }, []);
 
   const mergeSongs = async () => {
     if (!video || songs.length === 0) {
